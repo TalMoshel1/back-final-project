@@ -4,7 +4,6 @@ import verifyUser from '../middlewares/verify-user'
 import {getUserById,getUsers,updateUser,deleteUser, createUser} from '../controllers/users-controller'
 import { createPost } from '../controllers/posts-controller'
 
-console.log('userRoutes')
 const router = express.Router()
 
 // function sendResponse(req, res) {
