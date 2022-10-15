@@ -3,7 +3,7 @@ import { Types } from 'mongoose'
 
 
 interface IPost {
-    author: Types.ObjectId | undefined;
+    author: Types.ObjectId;
     mediaList: String[];
     body: String | undefined;
     caption?: String;

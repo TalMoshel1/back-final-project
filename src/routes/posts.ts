@@ -15,8 +15,6 @@ function sendResponse(req, res) {
 router.use(verifyUser)
 
 
-router.get('/api/feed', getFeed)
-
 // api/posts/1234534FGSDGZ3s#zs
 router.get('/api/posts/:username', getPostsByUsername)
 router.get('/api/post/:postId', getPostById)
