@@ -22,35 +22,30 @@ export async function getPostById(req: AuthenticatedRequest, res: Response, next
     }
     return res.send(post)
 }
+
 export async function valdiateUserAsCreatorOfPost(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const id = req.params.postId
     const myId = req.id?.toHexString
     const isValid = validatyeIdLength(id)
-    if (isValid) {
-        const post = await serviceGetPost(id)
-        const userId = post?.author
-        if (userId !== myId) {
-            res.send(Errors.cantChangeOtherUserPost)
-        } else {
-            next()
-        }
-
-    } else {
-        res.send(Errors.idLengthError)
-        // res.status(401).send()
+    if (!isValid) {
+        return res.send(Errors.idLengthError)
     }
+    const post = await serviceGetPost(id)
+    const userId = post?.author
+    if (userId !== myId) {
+        return res.send(Errors.cantChangeOtherUserPost)
+    }
+    next()
+
 }
 
 export async function getPostsByUsername(req: Request, res: Response) {
     const username = req.params.username
-    console.log(username)
     const posts = await serviceGetPostsByUsername(username)
-    if (posts) {
-        res.send(posts)
-    } else {
-        console.log('no posts yet')
-        res.send(`post not found}`)
+    if (!posts) {
+        return res.send(`post not found`)
     }
+    return res.send(posts)
 }
 
 
@@ -60,14 +55,12 @@ export async function createProfilePicture(req: AuthenticatedRequest, res: Respo
         if (req.file.mimetype !== 'image/jpeg' && req.file.mimetype !== 'image/jpg') {
             return res.send(Errors.fileFormat)
         }
-
         let { path: media } = req.file
         const updatedMedia = media.replace('\\', '/') // trying to save it not as : uploads\\1664182746286-DoReMi.jpg
         // const postData = { media, body, author }
         // const post = await serviceCreatePost(postData)
         // console.log(req.file.mimetype)
         // res.send(post)
-
     } catch {
         res.send(Errors.noFile)
     }
@@ -106,7 +99,7 @@ export async function deletePost(req: AuthenticatedRequest, res: Response) {
     }
     const postIdConverted = new Types.ObjectId(postId)
     const userId = req.id.toHexString()
-    console.log(typeof(postId), postId)
+    console.log(typeof (postId), postId)
     const user = await deletePostService(userId, postId)
     if (!user) {
         return res.send('post hasnt found')
@@ -159,12 +152,12 @@ export async function updatePost(req: AuthenticatedRequest, res: Response) {
     const userId = post.author
     if (userId != myId?.toHexString()) {
         return res.send(Errors.cantChangeOtherUserPost)
-    } else {
-        const { body } = req.body
-        const postData = { mediaList, body }
-        const post = await update(id, postData)
-        res.send(post)
     }
+    const { body } = req.body
+    const postData = { mediaList, body }
+    const post = await update(id, postData)
+    return res.send(post)
+
 }
 
 
@@ -229,24 +222,7 @@ export async function getFeed(req, res) {
     const page = parseInt(req.query.page) || 0
     const limit = parseInt(req.query.limit) || 5
     const offset = page * PAGE_LIMIT
-
     const posts = await serviceGetFeed(offset, limit)
-    // const listOfModifiedMediaList = posts.map((post) => {
-    //     return post.mediaList.map((url) => {
-    //         return url.replaceAll('\\', '/')
-    //     })
-    // })
-    // const updatedPosts = posts.map((post, index)=>{
-    //     post.mediaList = listOfModifiedMediaList[index]
-    //     return post
-    // })
-
-    // if (listOfModifiedMediaList) {
-
-    //     return res.send(listOfModifiedMediaList)
-    // } else {
-    //     return res.send('no posts yet')
-    // }
     res.json(posts)
 }
 
