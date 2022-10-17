@@ -155,8 +155,8 @@ export async function updatePost(req: AuthenticatedRequest, res: Response) {
     }
     const { body } = req.body
     const postData = { mediaList, body }
-    const post = await update(id, postData)
-    return res.send(post)
+    const postUpdated = await update(id, postData)
+    return res.send(postUpdated)
 
 }
 
