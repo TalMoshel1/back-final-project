@@ -7,7 +7,7 @@ import { Types } from 'mongoose'
 import multer from 'multer'
 import { AuthenticatedRequest } from '../types';
 
-const PAGE_LIMIT = 5
+export const PAGE_LIMIT = 5
 
 
 export async function getPostById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
