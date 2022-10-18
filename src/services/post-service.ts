@@ -6,6 +6,7 @@ interface IPost {
     author: Types.ObjectId;
     mediaList: String[];
     body: String | undefined;
+    username: String;
     caption?: String;
 }
 

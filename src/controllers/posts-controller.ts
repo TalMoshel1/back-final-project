@@ -70,9 +70,6 @@ export async function createProfilePicture(req: AuthenticatedRequest, res: Respo
     }
 }
 
-
-/* */
-
 export function getFilesErrors(files: {}[]) {
     const filesArray = files.map((file) => {
         const pairs = Object.entries(file)
@@ -114,6 +111,7 @@ export async function deletePost(req: AuthenticatedRequest, res: Response) {
 
 export async function createPost(req: AuthenticatedRequest, res: Response) {
     const { body } = req.body
+    const username = req.username
     const author = req.id
     if (!author) {
         res.send(Errors.noToken)
@@ -128,7 +126,7 @@ export async function createPost(req: AuthenticatedRequest, res: Response) {
             let { path: media } = file
             return media
         })
-        const postData = { mediaList, body, author }
+        const postData = { mediaList, body, author, username }
         const post = await serviceCreatePost(postData)
         res.send(post)
     } catch {
@@ -166,7 +164,7 @@ export async function updatePost(req: AuthenticatedRequest, res: Response) {
     } 
 
 
-}
+
 
 
 
