@@ -10,6 +10,10 @@ import { AuthenticatedRequest } from '../types';
 export const PAGE_LIMIT = 5
 
 
+console.log('new thing')
+
+
+
 export async function getPostById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const id = req.params.postId
     const isValid = validatyeIdLength(id)
@@ -152,13 +156,15 @@ export async function updatePost(req: AuthenticatedRequest, res: Response) {
     const userId = post.author
     if (userId != myId?.toHexString()) {
         return res.send(Errors.cantChangeOtherUserPost)
+
+    }
+    const { body } = req.body
+    const postData = { mediaList, body }
+    const postUpdated = await update(id, postData)
+    return res.send(postUpdated)
+
     } 
-        const { body } = req.body
-        const postData = { mediaList, body }
-        const postUpdated = await update(id, postData)
-        return res.send(postUpdated)
-    
-    
+
 
 }
 
