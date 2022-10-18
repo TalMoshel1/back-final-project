@@ -87,6 +87,8 @@ export async function getUserById(req: Request, res: Response) {
     return res.send(user)
 
 }
+
+
 export async function getUserByUsername(req: AuthenticatedRequest, res: Response) {
     const username = req.params.username
     const user = await serviceGetUserByUsername(username)
