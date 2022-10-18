@@ -16,3 +16,8 @@ export async function serviceGetPostsOfFollowings(Followings, offset = 0, limit 
     const posts = await PostModel.find({ 'author': { $in: Followings } }).sort({created: -1}).skip(offset).limit(limit)
     return posts
 }
+
+export async function serviceGetUsersSuggestions(Followings, offset = 0, limit = 5) {
+    const usersSuggestions = await UserModel.find({ '_id': { $nin: Followings } })
+
+}
