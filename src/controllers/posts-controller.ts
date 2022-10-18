@@ -9,6 +9,8 @@ import { AuthenticatedRequest } from '../types';
 
 export const PAGE_LIMIT = 5
 
+console.log('new thing')
+
 
 export async function getPostById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const id = req.params.postId
