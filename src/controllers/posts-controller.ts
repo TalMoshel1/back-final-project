@@ -152,11 +152,13 @@ export async function updatePost(req: AuthenticatedRequest, res: Response) {
     const userId = post.author
     if (userId != myId?.toHexString()) {
         return res.send(Errors.cantChangeOtherUserPost)
-    }
-    const { body } = req.body
-    const postData = { mediaList, body }
-    const postUpdated = await update(id, postData)
-    return res.send(postUpdated)
+    } 
+        const { body } = req.body
+        const postData = { mediaList, body }
+        const postUpdated = await update(id, postData)
+        return res.send(postUpdated)
+    
+    
 
 }
 
