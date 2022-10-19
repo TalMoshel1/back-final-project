@@ -25,8 +25,8 @@ export async function serviceUpdateUser(id, obj) {
 		});
 		return user
 	}
-	catch {
-		return Errors.usernameExists
+	catch(err) {
+		return err
 	}
 
 }
