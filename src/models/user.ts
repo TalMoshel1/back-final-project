@@ -17,7 +17,8 @@ const UserSchema = new mongoose.Schema({ // value's first letter must be a capit
     email: {
         type: String, validate: (value: string) => { value.includes('@') }
     },
-    tokenCreatedAt: {type: Number, default: "" }
+    tokenCreatedAt: {type: Number, default: "" },
+    media: {type: String, default: ""}
     
 })
 
