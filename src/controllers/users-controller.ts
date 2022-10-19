@@ -8,6 +8,8 @@ import { validatyeIdLength } from '../middlewares/validatyeIdLength'
 import { Errors } from '../util/UserErrors'
 import { AuthenticatedRequest } from '../types';
 import { idErrors } from '../util/idErrors'
+import { getFileErrors } from '../util/FilesErrors'
+
 
 
 export async function getUsers(req: AuthenticatedRequest, res: Response) {
@@ -74,7 +76,6 @@ export async function createUser(req: AuthenticatedRequest, res: Response) {
 
 export async function getUserById(req: Request, res: Response) {
     const id = req.params.userId
-    console.log('working')
     console.log(id)
     const isValid = validatyeIdLength(id)
     if (!isValid) {
@@ -112,19 +113,32 @@ export async function updateUser(req: AuthenticatedRequest, res: Response) { // 
     }
     const body = req.body
     const bodyList = Object.entries(body)
-    // console.log(bodyList) /* [ [ 'password', '123456789' ], [ 'username', 'shakshuuu' ] ] */
-    const result = {}
+    const propsToChange = {}
     bodyList.forEach((pair) => {
         const key = pair[0]
         const value = pair[1]
-        result[key] = value
+        propsToChange[key] = value
     })
-    const updatedUser = await serviceUpdateUser(idVerify, result)
-    if (!updatedUser) {
-        return res.send(Errors)
+    try {
+        const media = req.file
+        const fileErrors = getFileErrors(media)
+        console.log(fileErrors)
+        if (fileErrors.length) {
+            return res.send(fileErrors)
+        }
+        propsToChange.media = media.path
+        const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
+        if (!updatedUser) {
+            return res.send(Errors)
+        }
+        return res.send(updatedUser)
+    } catch {
+        const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
+        if (!updatedUser) {
+            return res.send(Errors)
+        }
+        return res.send(updatedUser)
     }
-    return res.send(updatedUser)
-
 }
 
 export async function deleteUser(req: AuthenticatedRequest, res: Response) { // כאן הבאתי יוזר ניים מהפרמס
