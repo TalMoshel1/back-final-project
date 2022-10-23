@@ -165,65 +165,6 @@ export async function updatePost(req: AuthenticatedRequest, res: Response) {
 
 
 
-
-
-
-
-
-
-//             const { body } = req.body
-//             try {
-//                 const files = req.files
-//                 const mediaList = files.map((file) => {
-//                     if (file.mimetype !== 'image/jpeg' && file.mimetype !== 'image/jpg') {
-//                         res.send(Errors.fileFormat)
-//                     } else {
-//                         let { path: media } = file
-//                         return media
-//                     }
-//                 })
-//                 const postData = { mediaList, body, myId }
-//                 const post = await serviceCreatePost(postData)
-//                 res.send(post)
-//             } catch {
-//                 res.send(Errors.noFile)
-//             }
-//         }
-//     } else {
-//         res.send(Errors.postNotFound)
-//     }
-// } else {
-//     res.send(Errors.idLengthError)
-//     // res.status(401).send()
-// }
-
-
-// export async function createPost(req: Request, res: Response) {
-//     const { body } = req.body
-//     const author = req.username
-//     if (!author) {
-//         res.send('not authorized')
-//     }
-//     if (body) {
-//         try {
-//             if (req.file.mimetype !== 'image/jpeg' && req.file.mimetype !== 'image/jpg') { 
-//                 res.send('please upload a file with extention of jpeg')
-//             } else {
-//                 let { path: media } = req.file
-//                 const updatedMedia = media.replace('\\', '/') // trying to save it not as : uploads\\1664182746286-DoReMi.jpg
-//                 const postData = { media, body, author }
-//                 const post = await serviceCreatePost(postData)
-//                 console.log(req.file.mimetype)
-//                 res.send(post)
-//             }
-//         } catch {
-//             res.send('image or video are required')
-//         }
-//     } else {
-//         res.send('body required')
-//     }
-// }
-
 export async function getFeed(req, res) {
     const page = parseInt(req.query.page) || 0
     const limit = parseInt(req.query.limit) || 5

@@ -40,7 +40,7 @@ export async function login(req, res) {
     const { username, password } = req.body;
     const user = await getUserByUsername(username);
     if (!user) {
-        return res.status(404)send(Errors.FailedLoginError)
+        return res.status(404).send(Errors.FailedLoginError)
     } else if (await !bcrypt.compare(password, user.password)) {
         return res.status(401).send(Errors.FailedLoginError)
     }
@@ -72,6 +72,6 @@ export async function register(req, res) {
         return res.send('welcome ' + username)
     }
     catch {
-        res.status(400).send({ message: 'oy' });
+        res.status(400).send({ message: 'oy' })
     }
 }
