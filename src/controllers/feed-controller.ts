@@ -26,12 +26,15 @@ export async function FollowingsById(req: Request, res: Response, next: NextFunc
 export async function getFeedSuggestions(req: Request, res: Response) {
     const followingsList = req.following
     if(!followingsList.length) {
-        const suggestions = await serviceGetUsers()
+        const suggestions = await serviceGetUsersSuggestions(req.id)
+        console.log(suggestions)
+        // const suggestions = await serviceGetUsers()
         return res.send(suggestions)
     }
     const followingAuthorsNameList = followingsList.map((follower) => {
         return follower._id.toHexString()
     })
+    followingAuthorsNameList.push(req.id.toHexString())
     const suggestions = await serviceGetUsersSuggestions(followingAuthorsNameList)
     return res.send(suggestions)
 }
