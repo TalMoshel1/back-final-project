@@ -35,14 +35,14 @@ function validateBodyLogin(obj: Record<string, string>) {
 export async function login(req, res) {
     const errors = validateBodyLogin(req.body)
     if (errors.length) {
-        return res.send(errors)
+        return res.status(403).send(errors)
     }
     const { username, password } = req.body;
     const user = await getUserByUsername(username);
     if (!user) {
-        return res.send(Errors.FailedLoginError)
+        return res.status(404)send(Errors.FailedLoginError)
     } else if (await !bcrypt.compare(password, user.password)) {
-        return res.send(Errors.FailedLoginError)
+        return res.status(401).send(Errors.FailedLoginError)
     }
     const tokenDate = new Date().getTime()
     await updateTokenTimeOfUserDB(user._id, tokenDate)
