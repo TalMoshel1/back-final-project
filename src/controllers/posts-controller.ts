@@ -7,7 +7,11 @@ import { Types } from 'mongoose'
 import multer from 'multer'
 import { AuthenticatedRequest } from '../types';
 
-const PAGE_LIMIT = 5
+export const PAGE_LIMIT = 5
+
+
+console.log('new thing')
+
 
 
 export async function getPostById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
@@ -66,9 +70,6 @@ export async function createProfilePicture(req: AuthenticatedRequest, res: Respo
     }
 }
 
-
-/* */
-
 export function getFilesErrors(files: {}[]) {
     const filesArray = files.map((file) => {
         const pairs = Object.entries(file)
@@ -110,6 +111,7 @@ export async function deletePost(req: AuthenticatedRequest, res: Response) {
 
 export async function createPost(req: AuthenticatedRequest, res: Response) {
     const { body } = req.body
+    const username = req.username
     const author = req.id
     if (!author) {
         res.send(Errors.noToken)
@@ -124,7 +126,7 @@ export async function createPost(req: AuthenticatedRequest, res: Response) {
             let { path: media } = file
             return media
         })
-        const postData = { mediaList, body, author }
+        const postData = { mediaList, body, author, username }
         const post = await serviceCreatePost(postData)
         res.send(post)
     } catch {
@@ -152,71 +154,16 @@ export async function updatePost(req: AuthenticatedRequest, res: Response) {
     const userId = post.author
     if (userId != myId?.toHexString()) {
         return res.send(Errors.cantChangeOtherUserPost)
+
     }
     const { body } = req.body
     const postData = { mediaList, body }
-    const Updatedpost = await update(id, postData)
-    return res.send(Updatedpost)
+    const postUpdated = await update(id, postData)
+    return res.send(postUpdated)
 
-}
-
-
+    } 
 
 
-
-
-//             const { body } = req.body
-//             try {
-//                 const files = req.files
-//                 const mediaList = files.map((file) => {
-//                     if (file.mimetype !== 'image/jpeg' && file.mimetype !== 'image/jpg') {
-//                         res.send(Errors.fileFormat)
-//                     } else {
-//                         let { path: media } = file
-//                         return media
-//                     }
-//                 })
-//                 const postData = { mediaList, body, myId }
-//                 const post = await serviceCreatePost(postData)
-//                 res.send(post)
-//             } catch {
-//                 res.send(Errors.noFile)
-//             }
-//         }
-//     } else {
-//         res.send(Errors.postNotFound)
-//     }
-// } else {
-//     res.send(Errors.idLengthError)
-//     // res.status(401).send()
-// }
-
-
-// export async function createPost(req: Request, res: Response) {
-//     const { body } = req.body
-//     const author = req.username
-//     if (!author) {
-//         res.send('not authorized')
-//     }
-//     if (body) {
-//         try {
-//             if (req.file.mimetype !== 'image/jpeg' && req.file.mimetype !== 'image/jpg') { 
-//                 res.send('please upload a file with extention of jpeg')
-//             } else {
-//                 let { path: media } = req.file
-//                 const updatedMedia = media.replace('\\', '/') // trying to save it not as : uploads\\1664182746286-DoReMi.jpg
-//                 const postData = { media, body, author }
-//                 const post = await serviceCreatePost(postData)
-//                 console.log(req.file.mimetype)
-//                 res.send(post)
-//             }
-//         } catch {
-//             res.send('image or video are required')
-//         }
-//     } else {
-//         res.send('body required')
-//     }
-// }
 
 export async function getFeed(req, res) {
     const page = parseInt(req.query.page) || 0

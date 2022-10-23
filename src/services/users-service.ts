@@ -11,6 +11,7 @@ export async function serviceGetUserById(id) {
 	return user
 }
 
+
 export async function serviceGetUserByUsername(username) {
 	const user = await UserModel.findOne({ username: username })
 	console.log(user)
@@ -24,8 +25,8 @@ export async function serviceUpdateUser(id, obj) {
 		});
 		return user
 	}
-	catch {
-		return Errors.usernameExists
+	catch(err) {
+		return err
 	}
 
 }

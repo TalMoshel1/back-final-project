@@ -1,8 +1,10 @@
 import express from 'express'
 import appRouter from '.'
 import verifyUser from '../middlewares/verify-user'
-import {getUserById,getUsers,updateUser,deleteUser, createUser} from '../controllers/users-controller'
+import { getUserById, getUsers, updateUser, deleteUser, createUser } from '../controllers/users-controller'
 import { createPost } from '../controllers/posts-controller'
+import upload from '../middlewares/upload'
+
 
 const router = express.Router()
 
@@ -13,7 +15,7 @@ const router = express.Router()
 router.use(verifyUser)
 
 router.post('/api/user', createUser)
-router.put('/api/user/:userId', updateUser)
+router.put('/api/user/:userId', upload.single('media'), updateUser)
 router.delete('/api/user/:userId', deleteUser)
 router.get('/api/user/:userId', getUserById)
 router.get('/api/user', getUsers)
