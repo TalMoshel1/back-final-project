@@ -19,5 +19,5 @@ export async function serviceGetPostsOfFollowings(Followings, offset = 0, limit 
 
 export async function serviceGetUsersSuggestions(Followings, offset = 0, limit = 5) {
     const usersSuggestions = await UserModel.find({ '_id': { $nin: Followings } })
-
+    return usersSuggestions
 }
