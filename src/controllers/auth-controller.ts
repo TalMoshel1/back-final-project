@@ -40,17 +40,15 @@ export async function login(req, res) {
     const { username, password } = req.body;
     const user = await getUserByUsername(username);
     if (!user) {
-        res.send(Errors.FailedLoginError)
+        return res.send(Errors.FailedLoginError)
+    } else if (await !bcrypt.compare(password, user.password)) {
+        return res.send(Errors.FailedLoginError)
     }
-    else if (await bcrypt.compare(password, user.password)) {
-        const tokenDate = new Date().getTime()
-        await updateTokenTimeOfUserDB(user._id, tokenDate)
-        const tokenAndOptions = await getTokenAndOptions(user._id, tokenDate)
-        res.cookie('cookieInsta', tokenAndOptions.token, tokenAndOptions.options)
-        res.send(user.username)
-    } else {
-        res.send(Errors.FailedLoginError)
-    }
+    const tokenDate = new Date().getTime()
+    await updateTokenTimeOfUserDB(user._id, tokenDate)
+    const tokenAndOptions = await getTokenAndOptions(user._id, tokenDate)
+    res.cookie('cookieInsta', tokenAndOptions.token, tokenAndOptions.options)
+    return res.send(user.username)
 }
 
 
