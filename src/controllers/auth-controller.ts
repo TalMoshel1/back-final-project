@@ -62,7 +62,6 @@ export async function register(req, res) {
         console.log('why')
         return res.send(errors)
     }
-
     const user = await getUserByUsername(username);
     if (user) {
         return res.send(Errors.usernameExists)
