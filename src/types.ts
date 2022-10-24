@@ -6,6 +6,7 @@ export interface AuthenticatedRequest extends Request {
     username: string;
     email?: string;
     files: object[] | [];
+    media?: string;
 }
 
 /*

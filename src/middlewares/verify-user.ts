@@ -25,6 +25,7 @@ async function verifyUser(req: AuthenticatedRequest, res: Response, next: NextFu
 			res.cookie('cookieInsta', tokenOptions.token, tokenOptions.options)
 			const user = await getUserById(tokenId)
 			req.id = user?._id
+			req.media = user?.media
 			req.username = user?.username
 			req.user = user
 			next()
