@@ -59,7 +59,6 @@ export async function register(req, res) {
     }
     const errors = validateBodyUser(req.body)
     if (errors.length) {
-        console.log('why')
         return res.send(errors)
     }
     const user = await getUserByUsername(username);
@@ -72,6 +71,6 @@ export async function register(req, res) {
         return res.send('welcome ' + username)
     }
     catch {
-        res.status(400).send({ message: 'oy' })
+        res.status(400)
     }
 }
