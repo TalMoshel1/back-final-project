@@ -60,11 +60,7 @@ export async function createProfilePicture(req: AuthenticatedRequest, res: Respo
             return res.send(Errors.fileFormat)
         }
         let { path: media } = req.file
-        const updatedMedia = media.replace('\\', '/') // trying to save it not as : uploads\\1664182746286-DoReMi.jpg
-        // const postData = { media, body, author }
-        // const post = await serviceCreatePost(postData)
-        // console.log(req.file.mimetype)
-        // res.send(post)
+        const updatedMedia = media.replace('\\', '/') 
     } catch {
         res.send(Errors.noFile)
     }

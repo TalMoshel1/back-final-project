@@ -46,7 +46,7 @@ export async function serviceGetPost(id) {
 }
 
 export async function serviceGetPostsByUsername(username: string){
-    const allPosts = await PostModel.find({}).populate("author")
+    const allPosts = await PostModel.find({username: username}).populate("author")
     return allPosts
 }
 
