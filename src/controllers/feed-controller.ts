@@ -9,10 +9,10 @@ export async function getFeedPosts(req: Request, res: Response) {
     const followingAuthorsNameList = followingsList.map((follower) => {
         return follower._id.toHexString()
     })
-    const page =  0
+    const page =  req.params.offset
     const limit = 5
     const offset = page * PAGE_LIMIT
-    const posts = await serviceGetPostsOfFollowings(followingAuthorsNameList)
+    const posts = await serviceGetPostsOfFollowings(followingAuthorsNameList, page)
     res.send(posts)
 }
 
