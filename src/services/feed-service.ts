@@ -13,7 +13,7 @@ export async function serviceGetFollowingsById(id) {
 }
 
 export async function serviceGetPostsOfFollowings(Followings, offset = 0, limit = 5) {
-    const posts = await PostModel.find({ 'author': { $in: Followings } }).sort({created: -1}).skip(offset).limit(limit)
+    const posts = await PostModel.find({ 'author': { $in: Followings } }).sort({created: -1}).skip(offset).limit(limit).populate('author')
     return posts
 }
 
