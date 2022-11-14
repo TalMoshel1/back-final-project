@@ -3,16 +3,16 @@ import { serviceGetFollowingsById } from '../services/feed-service';
 import { serviceGetPostsOfFollowings, serviceGetUsersSuggestions } from '../services/feed-service'
 import {PAGE_LIMIT} from './posts-controller'
 import {serviceGetUsers} from '../services/users-service'
+import { Request, Response } from 'express';
 
 export async function getFeedPosts(req: Request, res: Response) {
     const followingsList = req.following
     const followingAuthorsNameList = followingsList.map((follower) => {
         return follower._id.toHexString()
     })
-    const page =  req.params.offset
-    const limit = 5
+    const page =  parseInt(req.query.offset)
     const offset = page * PAGE_LIMIT
-    const posts = await serviceGetPostsOfFollowings(followingAuthorsNameList, page)
+    const posts = await serviceGetPostsOfFollowings(followingAuthorsNameList, offset)
     res.send(posts)
 }
 
