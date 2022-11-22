@@ -82,7 +82,10 @@ export function getFilesErrors(files: {}[]) {
         }, [])
         return errors
     })
-    return filesArray[0]
+    if (filesArray.length) {
+        return filesArray[0]
+    }
+    return filesArray
 }
 
 export function getBodyErrors() {
@@ -134,7 +137,7 @@ export async function updatePost(req: AuthenticatedRequest, res: Response) {
     const id = req.params.postId
     const files = req.files
     const errorsList = getFilesErrors(files)
-    console.log(errorsList)
+    console.log(errorsList, 'dfdf')
     if (errorsList.length) {
         return res.send(errorsList)
     }
