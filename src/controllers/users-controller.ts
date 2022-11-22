@@ -1,4 +1,4 @@
-import { serviceGetUsers, serviceGetUserById, serviceUpdateUser, serviceDeleteUser, serviceGetUserByUsername, serviceCreateUser } from '../services/users-service';
+import { serviceGetUsers, serviceGetUserById, serviceUpdateUser, serviceDeleteUser, serviceGetUserByUsername, serviceCreateUser, serviceFollow } from '../services/users-service';
 import { UserModel } from '../models/user';
 import { verify } from 'jsonwebtoken'
 import { Request, Response } from 'express';
@@ -8,7 +8,7 @@ import { validatyeIdLength } from '../middlewares/validatyeIdLength'
 import { Errors } from '../util/UserErrors'
 import { AuthenticatedRequest } from '../types';
 import { idErrors } from '../util/idErrors'
-import { getFileErrors } from '../util/FilesErrors'
+import {getFilesErrors} from '../controllers/posts-controller'
 
 
 
@@ -121,7 +121,7 @@ export async function updateUser(req: AuthenticatedRequest, res: Response) { // 
     })
     try {
         const media = req.file
-        const fileErrors = getFileErrors(media)
+        const fileErrors = getFilesErrors([media])
         console.log(fileErrors)
         if (fileErrors.length) {
             return res.send(fileErrors)
@@ -132,8 +132,10 @@ export async function updateUser(req: AuthenticatedRequest, res: Response) { // 
             return res.send(Errors)
         }
         return res.send(updatedUser)
-    } catch {
+    } catch(e) {
+        console.log(e)
         const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
+        console.log('gets in catch')
         if (!updatedUser) {
             return res.send(Errors)
         }
@@ -157,6 +159,28 @@ export async function deleteUser(req: AuthenticatedRequest, res: Response) { // 
 
 }
 
+export async function follow(req: AuthenticatedRequest, res: Response) { // using graph QL: (mutation, query, subscribtion, execution). not CRUD
+    const isValidId = validatyeIdLength(req.id?.toHexString())
+    if (!isValidId) {
+        console.log(req.id.toHexString())
+        return
+    }
+    const userToFollow = Object.entries(req.body)
+    const id = userToFollow[0][0]
+    const value = userToFollow[0][1]
+    if (id !== 'id') {
+        console.log(id)
+        return
+    }
+    if (!validatyeIdLength(value)) {
+        console.log('failed')
+        return
+    }
+    console.log('gets to service')
+    const updateUser = await serviceFollow(req.id, value)
+    return res.send(updateUser)
+}
+
 // export async function getFollowers(req: Express.Request, res: Express.Response) {
 //     // const id = req.user.id
 
@@ -171,20 +195,9 @@ export async function deleteUser(req: AuthenticatedRequest, res: Response) { // 
 
 // }
 
-// export async function follow(req: AuthenticatedRequest, res: Response) { // using graph QL: (mutation, query, subscribtion, execution). not CRUD
-//     // const id = req.params.username
-//     const isValidId = validatyeIdLength(req.id?.toHexString())
-//     if (isValidId) {
-//         const user = await serviceGetUserById(req.id)
-//         const { id, value } = req.body
-//         if (id === 'id') {
-//             if (validatyeIdLength(value)) {
 
-//             } else {
 
-//             }
-//         }
-//     }
+
     // const token = req['cookies']['cookieInsta']
     // const verifiedToken = (verify(token, process.env.SECRET))
     // const id = verifiedToken.signAt.id
