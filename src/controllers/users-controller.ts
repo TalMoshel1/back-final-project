@@ -22,7 +22,7 @@ export function validateBodyUser(obj) {
     const fieldsArray = Object.keys(obj)
     const errors = fieldsArray.reduce((errorsArray: object[], field) => {
         console.log(errorsArray)
-        if (field !== 'username' && field !== 'fullname' && field !== 'password' && field !== 'email') {
+        if (field !== 'username' && field !== 'fullname' && field !== 'password' && field !== 'email' && field !== 'formData') {
             errorsArray.push(Errors.invalidProp)
         }
         if (field === 'username') {
@@ -104,6 +104,8 @@ export async function getUserByUsername(req: AuthenticatedRequest, res: Response
 export async function updateUser(req: AuthenticatedRequest, res: Response) { // go to auth flow
     const idParams = req.params.userId
     const idVerify = req.id.valueOf()
+    console.log(req.body)
+    console.log(idParams === idVerify)
     if (idParams !== idVerify) {
         return res.send(Errors.noToken)
     }
