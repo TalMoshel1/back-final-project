@@ -31,6 +31,20 @@ export async function serviceUpdateUser(id, obj) {
 
 }
 
+export async function serviceFollow(myId, otherUserId) {
+	const updateUser = await UserModel.findOneAndUpdate({ _id: myId }, { $push: {following: otherUserId } }, {
+		new: true
+	});
+	return updateUser
+}
+
+export async function serviceUnFollow(myId, otherUserId) {
+	const updateUser = await UserModel.findOneAndUpdate({ _id: myId }, { $pull: {following: otherUserId } }, {
+		new: true
+	});
+	return updateUser
+}
+
 // export async function serviceUpdateUser(id, prop: String, value) {
 //     const user = await UserModel.findOneAndUpdate({ _id: id }, { $set: { [prop]: value } }, {
 //         new: true

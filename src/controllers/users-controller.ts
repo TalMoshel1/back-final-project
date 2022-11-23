@@ -1,4 +1,4 @@
-import { serviceGetUsers, serviceGetUserById, serviceUpdateUser, serviceDeleteUser, serviceGetUserByUsername, serviceCreateUser, serviceFollow } from '../services/users-service';
+import { serviceGetUsers, serviceGetUserById, serviceUpdateUser, serviceDeleteUser, serviceGetUserByUsername, serviceCreateUser, serviceFollow, serviceUnFollow } from '../services/users-service';
 import { UserModel } from '../models/user';
 import { verify } from 'jsonwebtoken'
 import { Request, Response } from 'express';
@@ -22,7 +22,7 @@ export function validateBodyUser(obj) {
     const fieldsArray = Object.keys(obj)
     const errors = fieldsArray.reduce((errorsArray: object[], field) => {
         console.log(errorsArray)
-        if (field !== 'username' && field !== 'fullname' && field !== 'password' && field !== 'email' && field !== 'formData') {
+        if (field !== 'username' && field !== 'fullname' && field !== 'password' && field !== 'email' && field !== 'file') {
             errorsArray.push(Errors.invalidProp)
         }
         if (field === 'username') {
@@ -101,10 +101,54 @@ export async function getUserByUsername(req: AuthenticatedRequest, res: Response
 
 
 
+
+
+// export async function updateUser(req: AuthenticatedRequest, res: Response) { // go to auth flow
+//     const idParams = req.params.userId
+//     const idVerify = req.id.valueOf()
+//     console.log(idParams === idVerify)
+//     if (idParams !== idVerify) {
+//         return res.send(Errors.noToken)
+//     }
+//     const errors = validateBodyUser(req.body)   /* { [name]: name, [genre]: genre, "author": author, "similar": similar} */
+//     if (errors.length) {
+//         return res.send(errors)
+//     }
+//     const body = req.body
+//     const bodyList = Object.entries(body)
+//     const propsToChange = {}
+//     bodyList.forEach((pair) => {
+//         const key = pair[0]
+//         const value = pair[1]
+//         propsToChange[key] = value
+//     })
+//     try {
+//         const media = req.file
+//         const fileErrors = getFilesErrors([media])
+//         if (fileErrors.length) {
+//             return res.send(fileErrors)
+//         }
+//         propsToChange.media = media.path
+//         const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
+//         if (!updatedUser) {
+//             return res.send(Errors)
+//         }
+//         return res.send(updatedUser)
+//     } catch(e) {
+//         console.log(e)
+//         const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
+//         console.log('gets in catch')
+//         if (!updatedUser) {
+//             return res.send(Errors)
+//         }
+//         return res.send(updatedUser)
+//     }
+// }
+
 export async function updateUser(req: AuthenticatedRequest, res: Response) { // go to auth flow
+    console.log(req.file)
     const idParams = req.params.userId
     const idVerify = req.id.valueOf()
-    console.log(req.body)
     console.log(idParams === idVerify)
     if (idParams !== idVerify) {
         return res.send(Errors.noToken)
@@ -122,9 +166,10 @@ export async function updateUser(req: AuthenticatedRequest, res: Response) { // 
         propsToChange[key] = value
     })
     try {
-        const media = req.file
+        const media = req.file //   מחזיר Undefined ונכנס ל catch
+        console.log('heres the media')
+        console.log(media)
         const fileErrors = getFilesErrors([media])
-        console.log(fileErrors)
         if (fileErrors.length) {
             return res.send(fileErrors)
         }
@@ -135,6 +180,7 @@ export async function updateUser(req: AuthenticatedRequest, res: Response) { // 
         }
         return res.send(updatedUser)
     } catch(e) {
+        console.log('error')
         console.log(e)
         const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
         console.log('gets in catch')
@@ -182,6 +228,30 @@ export async function follow(req: AuthenticatedRequest, res: Response) { // usin
     const updateUser = await serviceFollow(req.id, value)
     return res.send(updateUser)
 }
+
+export async function unFollow(req: AuthenticatedRequest, res: Response) {
+    const isValidId = validatyeIdLength(req.id?.toHexString())
+    if (!isValidId) {
+        console.log(req.id.toHexString())
+        return
+    }
+    const userToUnFollow = Object.entries(req.body)
+    const id = userToUnFollow[0][0]
+    const value = userToUnFollow[0][1]
+    if (id !== 'id') {
+        console.log(id)
+        return
+    }
+    if (!validatyeIdLength(value)) {
+        console.log('failed')
+        return
+    }
+    console.log('gets to service')
+    const updateUser = await serviceUnFollow(req.id, value)
+    return res.send(updateUser)
+}
+
+
 
 // export async function getFollowers(req: Express.Request, res: Express.Response) {
 //     // const id = req.user.id
