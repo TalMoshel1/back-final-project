@@ -59,11 +59,11 @@ export async function register(req, res) {
     }
     const errors = validateBodyUser(req.body)
     if (errors.length) {
-        return res.send(errors)
+        return res.status(403).send(errors)
     }
     const user = await getUserByUsername(username);
     if (user) {
-        return res.send(Errors.usernameExists)
+        return res.status(403).send(Errors.usernameExists)
     }
     try {
         const newUser = await createUser(req.body);
