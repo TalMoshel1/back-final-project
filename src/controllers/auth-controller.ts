@@ -55,7 +55,7 @@ export async function login(req, res) {
 export async function register(req, res) {
     const { email, username, password, fullname } = req.body
     if (!(email && username && password && fullname)) {
-        return res.send(Errors.missedFields)
+        return res.status(403).send(Errors.missedFields)
     }
     const errors = validateBodyUser(req.body)
     if (errors.length) {
