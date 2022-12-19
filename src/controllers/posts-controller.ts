@@ -5,14 +5,9 @@ import { validatyeIdLength } from '../middlewares/validatyeIdLength'
 import { Errors } from '../util/PostsErrors'
 import { Types } from 'mongoose'
 import multer from 'multer'
-import { AuthenticatedRequest } from '../types';
+import { AuthenticatedRequest } from '../types__interfaces';
 
 export const PAGE_LIMIT = 5
-
-
-console.log('new thing')
-
-
 
 export async function getPostById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const id = req.params.postId
@@ -72,7 +67,6 @@ export function getFilesErrors(files: {}[]) {
         const errors = pairs.reduce((errorsArray: {}[], pair) => {
             if (pair[0] !== 'fieldname' && pair[0] !== 'originalname' && pair[0] !== 'encoding' && pair[0] !== 'mimetype' && pair[0] !== 'destination' && pair[0] !== 'filename' && pair[0] !== 'path' && pair[0] !== 'size') {
                 errorsArray.push(Errors.invalidProp)
-                console.log(pair[0])
             } else if (pair[0] === 'mimetype') {
                 if (pair[1] !== 'image/jpeg' && pair[1] !== 'image/jpg' && pair[1] !== 'image/png') { // also png..
                     errorsArray.push(Errors.fileFormat)
@@ -99,7 +93,6 @@ export async function deletePost(req: AuthenticatedRequest, res: Response) {
     }
     const postIdConverted = new Types.ObjectId(postId)
     const userId = req.id.toHexString()
-    console.log(typeof (postId), postId)
     const user = await deletePostService(userId, postId)
     if (!user) {
         return res.send('post hasnt found')
@@ -109,8 +102,8 @@ export async function deletePost(req: AuthenticatedRequest, res: Response) {
 
 
 export async function createPost(req: AuthenticatedRequest, res: Response) {
-    const { body } = req.body
     const username = req.username
+    const {body} = req.body
     const author = req.id
     if (!author) {
         res.send(Errors.noToken)
@@ -127,17 +120,16 @@ export async function createPost(req: AuthenticatedRequest, res: Response) {
         })
         const postData = { mediaList, body, author, username }
         const post = await serviceCreatePost(postData)
-        res.send(post)
+        res.status(200).send(post)
     } catch {
         res.send(Errors.noFile)
     }
 }
 
-export async function updatePost(req: AuthenticatedRequest, res: Response) {
+export async function updatePost(req: Request, res: Response) {
     const id = req.params.postId
     const files = req.files
     const errorsList = getFilesErrors(files)
-    console.log(errorsList, 'dfdf')
     if (errorsList.length) {
         return res.send(errorsList)
     }

@@ -14,7 +14,6 @@ export async function serviceGetUserById(id) {
 
 export async function serviceGetUserByUsername(username) {
 	const user = await UserModel.findOne({ username: username })
-	console.log(user)
 	return user
 }
 
@@ -58,12 +57,10 @@ export async function serviceDeleteUser(id) {
 }
 
 export async function serviceCreateUser(user: any = {}) {
-	console.log(user)
 	if (!user.username) {
 		throw new Error('username is required');
 	}
 	try {
-		// console.log(user)
 		const newUser = new UserModel({
 			fullname: user.fullname,
 			username: user.username,

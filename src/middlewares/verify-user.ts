@@ -2,13 +2,32 @@ import { verify } from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { UserModel } from '../models/user'
 import { updateTokenTimeOfUserDB, getTokenAndOptions, getUserById } from '../services/auth-service'
-import { NextFunction, Request, Response } from 'express'
-import { AuthenticatedRequest } from '../types'
+import { NextFunction, Response } from 'express'
 import { Errors } from '../util/UserErrors'
+import {Types} from 'mongoose'
 
 const EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 90
 
-async function verifyUser(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+interface User {
+    fullname: string;
+    created: Date;
+    following: string[];
+    username: string;
+    password: string;
+    email?: string | undefined;
+    tokenCreatedAt: number;
+    media: string;
+}
+export interface Request {
+    id?: Types.ObjectId | undefined;
+	media?: string;
+	username?: string;
+	user?: User | null | undefined;
+	path: string;
+	cookies: string[];
+}
+
+async function verifyUser(req: Request, res: Response, next: NextFunction) {
 	const token = req.cookies['cookieInsta']  /* token return "createdAt" (date) and "signAt" (id) */
 	if (req.path === '/api/login' || req.path === '/api/register') {
 		return next()
@@ -28,10 +47,10 @@ async function verifyUser(req: AuthenticatedRequest, res: Response, next: NextFu
 			req.media = user?.media
 			req.username = user?.username
 			req.user = user
+			res.status(200)
 			next()
 		}
 		catch {
-			console.log('verification failed', req.cookies)
 			res.status(401).json({ message: 'you are not authorized' })
 		}
 	}

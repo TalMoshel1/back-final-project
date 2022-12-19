@@ -1,28 +1,26 @@
 import { serviceGetUsers, serviceGetUserById, serviceUpdateUser, serviceDeleteUser, serviceGetUserByUsername, serviceCreateUser, serviceFollow, serviceUnFollow } from '../services/users-service';
 import { UserModel } from '../models/user';
 import { verify } from 'jsonwebtoken'
-import { Request, Response } from 'express';
-// import { notFound } from '../util/PostsErrors';
+import { NextFunction, Response } from 'express';
+import {Request, RequestBody} from '../types__interfaces'
 import bcrypt from 'bcrypt'
 import { validatyeIdLength } from '../middlewares/validatyeIdLength'
 import { Errors } from '../util/UserErrors'
-import { AuthenticatedRequest } from '../types';
 import { idErrors } from '../util/idErrors'
 import {getFilesErrors} from '../controllers/posts-controller'
 
 
 
-export async function getUsers(req: AuthenticatedRequest, res: Response) {
+export async function getUsers(req: Request, res: Response) {
     const users = await serviceGetUsers()
     return res.send(users)
 
 }
 
-export function validateBodyUser(obj) {
+export function validateBodyUser(obj: RequestBody) {
     const fieldsArray = Object.keys(obj)
     const errors = fieldsArray.reduce((errorsArray: object[], field) => {
-        console.log(errorsArray)
-        if (field !== 'username' && field !== 'fullname' && field !== 'password' && field !== 'email' && field !== 'file') {
+        if (field !== 'username' && field !== 'fullname' && field !== 'password' && field !== 'email' && field !== 'file' && field !== 'media') {
             errorsArray.push(Errors.invalidProp)
         }
         if (field === 'username') {
@@ -51,32 +49,36 @@ export function validateBodyUser(obj) {
 }
 
 
-export async function createUser(req: AuthenticatedRequest, res: Response) {
+export async function createUser(req: Request, res: Response) {
     const { email, username, password, fullname } = req.body
     if (!(email && username && password && fullname)) {
-        return res.send(Errors.missedFields)
+        res.send(Errors.missedFields)
+        return 
     }
     const usernameExists = serviceGetUserByUsername(username)
     if (!usernameExists) {
-        return res.send('username already Exists. choose different one')
+        res.send('username already Exists. choose different one')
+        return
     }
 
     const errors = validateBodyUser(req.body)
     if (errors.length !== 0) {
-        return res.send(Errors)
+        res.send(Errors)
+        return
     }
     const user = await serviceCreateUser(req.body)
     if (user) {
-        return res.send(Errors)
+        res.send(Errors)
+        return
     }
-    return res.send(user)
+    res.send(user)
+    return
 
 
 }
 
 export async function getUserById(req: Request, res: Response) {
     const id = req.params.userId
-    console.log(id)
     const isValid = validatyeIdLength(id)
     if (!isValid) {
         return res.status(401).send(idErrors.idLength)
@@ -90,7 +92,7 @@ export async function getUserById(req: Request, res: Response) {
 }
 
 
-export async function getUserByUsername(req: AuthenticatedRequest, res: Response) {
+export async function getUserByUsername(req: Request, res: Response) {
     const username = req.params.username
     const user = await serviceGetUserByUsername(username)
     if (!user) {
@@ -100,56 +102,9 @@ export async function getUserByUsername(req: AuthenticatedRequest, res: Response
 }
 
 
-
-
-
-// export async function updateUser(req: AuthenticatedRequest, res: Response) { // go to auth flow
-//     const idParams = req.params.userId
-//     const idVerify = req.id.valueOf()
-//     console.log(idParams === idVerify)
-//     if (idParams !== idVerify) {
-//         return res.send(Errors.noToken)
-//     }
-//     const errors = validateBodyUser(req.body)   /* { [name]: name, [genre]: genre, "author": author, "similar": similar} */
-//     if (errors.length) {
-//         return res.send(errors)
-//     }
-//     const body = req.body
-//     const bodyList = Object.entries(body)
-//     const propsToChange = {}
-//     bodyList.forEach((pair) => {
-//         const key = pair[0]
-//         const value = pair[1]
-//         propsToChange[key] = value
-//     })
-//     try {
-//         const media = req.file
-//         const fileErrors = getFilesErrors([media])
-//         if (fileErrors.length) {
-//             return res.send(fileErrors)
-//         }
-//         propsToChange.media = media.path
-//         const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
-//         if (!updatedUser) {
-//             return res.send(Errors)
-//         }
-//         return res.send(updatedUser)
-//     } catch(e) {
-//         console.log(e)
-//         const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
-//         console.log('gets in catch')
-//         if (!updatedUser) {
-//             return res.send(Errors)
-//         }
-//         return res.send(updatedUser)
-//     }
-// }
-
-export async function updateUser(req: AuthenticatedRequest, res: Response) { // go to auth flow
-    console.log(req.file)
+export async function updateUser(req: Request, res: Response) { // go to auth flow
     const idParams = req.params.userId
-    const idVerify = req.id.valueOf()
-    console.log(idParams === idVerify)
+    const idVerify = req.id?.valueOf()
     if (idParams !== idVerify) {
         return res.send(Errors.noToken)
     }
@@ -159,31 +114,36 @@ export async function updateUser(req: AuthenticatedRequest, res: Response) { // 
     }
     const body = req.body
     const bodyList = Object.entries(body)
-    const propsToChange = {}
+    const propsToChange = {media:''}
     bodyList.forEach((pair) => {
         const key = pair[0]
         const value = pair[1]
         propsToChange[key] = value
     })
     try {
-        const media = req.file //   מחזיר Undefined ונכנס ל catch
-        console.log('heres the media')
-        console.log(media)
-        const fileErrors = getFilesErrors([media])
-        if (fileErrors.length) {
-            return res.send(fileErrors)
+        if (req.file?.path) {
+            const media = req.file //   מחזיר Undefined ונכנס ל catch
+            const fileErrors = getFilesErrors([media])
+            if (fileErrors.length) {
+                return res.send(fileErrors)
+            }
+            propsToChange.media = media.path
+            const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
+            if (!updatedUser) {
+                return res.send(Errors)
+            }
+            return res.send(updatedUser)
+        } else {
+            propsToChange.media = ''
+            const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
+            if (!updatedUser) {
+                return res.send(Errors)
+            }
+            return res.send(updatedUser)
         }
-        propsToChange.media = media.path
-        const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
-        if (!updatedUser) {
-            return res.send(Errors)
-        }
-        return res.send(updatedUser)
+
     } catch(e) {
-        console.log('error')
-        console.log(e)
         const updatedUser = await serviceUpdateUser(idVerify, propsToChange)
-        console.log('gets in catch')
         if (!updatedUser) {
             return res.send(Errors)
         }
@@ -191,7 +151,7 @@ export async function updateUser(req: AuthenticatedRequest, res: Response) { // 
     }
 }
 
-export async function deleteUser(req: AuthenticatedRequest, res: Response) { // כאן הבאתי יוזר ניים מהפרמס
+export async function deleteUser(req: Request, res: Response) { // כאן הבאתי יוזר ניים מהפרמס
     const idParams = req.params.userId /* gives an id */
     // TODO: only the current user can delete its own!
     const idVerify = req.id?.toHexString()
@@ -207,72 +167,38 @@ export async function deleteUser(req: AuthenticatedRequest, res: Response) { // 
 
 }
 
-export async function follow(req: AuthenticatedRequest, res: Response) { // using graph QL: (mutation, query, subscribtion, execution). not CRUD
+export async function follow(req: Request, res: Response) { // using graph QL: (mutation, query, subscribtion, execution). not CRUD
     const isValidId = validatyeIdLength(req.id?.toHexString())
     if (!isValidId) {
-        console.log(req.id.toHexString())
         return
     }
     const userToFollow = Object.entries(req.body)
     const id = userToFollow[0][0]
-    const value = userToFollow[0][1]
+    const value: string = userToFollow[0][1]
     if (id !== 'id') {
-        console.log(id)
         return
     }
     if (!validatyeIdLength(value)) {
-        console.log('failed')
         return
     }
-    console.log('gets to service')
-    const updateUser = await serviceFollow(req.id, value)
-    return res.send(updateUser)
+    const updatedUser = await serviceFollow(req.id, value)
+    return res.send(updatedUser)
 }
 
-export async function unFollow(req: AuthenticatedRequest, res: Response) {
+export async function unFollow(req: Request, res: Response) {
     const isValidId = validatyeIdLength(req.id?.toHexString())
     if (!isValidId) {
-        console.log(req.id.toHexString())
         return
     }
     const userToUnFollow = Object.entries(req.body)
     const id = userToUnFollow[0][0]
     const value = userToUnFollow[0][1]
     if (id !== 'id') {
-        console.log(id)
         return
     }
     if (!validatyeIdLength(value)) {
-        console.log('failed')
         return
     }
-    console.log('gets to service')
     const updateUser = await serviceUnFollow(req.id, value)
     return res.send(updateUser)
 }
-
-
-
-// export async function getFollowers(req: Express.Request, res: Express.Response) {
-//     // const id = req.user.id
-
-// }
-
-// export async function getMyFollowing(req: Express.Request, res: Express.Response) { // להביא ביצוע של פולו
-//     const token = req['cookies']['cookieInsta']
-//     const verifiedToken = (verify(token, process.env.SECRET))
-//     const id = verifiedToken.signAt.id
-//     const userFollowing = await serviceGetUserById(id)
-//     console.log(userFollowing['following'])
-
-// }
-
-
-
-
-    // const token = req['cookies']['cookieInsta']
-    // const verifiedToken = (verify(token, process.env.SECRET))
-    // const id = verifiedToken.signAt.id
-    // const username = req['body'].username
-    // console.log(username)
-

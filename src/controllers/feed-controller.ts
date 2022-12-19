@@ -1,11 +1,11 @@
-import { AuthenticatedRequest } from '../types';
+import { AuthenticatedRequest } from '../types__interfaces';
 import { serviceGetFollowingsById } from '../services/feed-service';
 import { serviceGetPostsOfFollowings, serviceGetUsersSuggestions } from '../services/feed-service'
 import {PAGE_LIMIT} from './posts-controller'
 import {serviceGetUsers} from '../services/users-service'
 import { Request, Response } from 'express';
 
-export async function getFeedPosts(req: Request, res: Response) {
+export async function getFeedPosts(req: AuthenticatedRequest, res: Response) {
     const followingsList = req.following
     const followingAuthorsNameList = followingsList.map((follower) => {
         return follower._id.toHexString()
@@ -16,18 +16,17 @@ export async function getFeedPosts(req: Request, res: Response) {
     res.send(posts)
 }
 
-export async function FollowingsById(req: Request, res: Response, next: NextFunction) {
-    const id = req.id.toHexString()
+export async function FollowingsById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    const id = req.id?.toHexString()
     const following = await serviceGetFollowingsById(id)
     req.following = following
     next()
 }
 
-export async function getFeedSuggestions(req: Request, res: Response) {
+export async function getFeedSuggestions(req: AuthenticatedRequest, res: Response) {
     const followingsList = req.following
     if(!followingsList.length) {
         const suggestions = await serviceGetUsersSuggestions(req.id)
-        console.log(suggestions)
         // const suggestions = await serviceGetUsers()
         return res.send(suggestions)
     }

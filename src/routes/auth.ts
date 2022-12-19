@@ -1,35 +1,19 @@
 import express from 'express'
-// import {login, register, userInfo} from '../controllers/auth-controller'
 import verifyUser from '../middlewares/verify-user'
 import {register, login} from '../controllers/auth-controller'
-import bcrypt from 'bcrypt'
+import { Request } from '../types__interfaces'
 
 const router = express.Router()
 
-// async function isValidProps(username, password) {
-// 	const promise = new Promise((resolve, reject) => {
-// 		if (username === 'username' && password === 'password') {
-// 			resolve([username, password] )
-// 		} else {
-// 			reject('the props are not correct')
-// 		}
-// 	})
-// 	return promise
-// }
-
-
-
-
-// router.get('/api', (req,res) => {
-//     res.send('ho ye!')
-//     console.log('yes! api call work')
-// })
 router.post('/api/login', login)
 router.post('/api/register', register)
-router.get('/api/user-info',verifyUser, (req, res) => {
-    // console.log(req.username)
+router.get('/api/user-info',verifyUser, (req: Request, res) => {
     res.json(req.user)
 } )
-
+router.get('/api/logout', (req,res)=>{
+    return res.clearCookie('cookieInsta')
+    .status(200)
+    .json({message: 'Successfully logged out'})
+})
 
 export default router
