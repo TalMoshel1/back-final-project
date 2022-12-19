@@ -2,16 +2,13 @@ import bcrypt from 'bcrypt'
 import { UserModel } from '../models/user'
 import { verify, sign } from 'jsonwebtoken'
 
-
 export async function createUser(user: any = {}) {
 	if (!user.username) {
 		throw new Error('username is required');
 	}
 	try {
-		// console.log(user)
 		const newUser = new UserModel({
 			fullname: user.fullname,
-			// lastName: user.lastName,
 			username: user.username,
 			password: user.password,
 			email: user.email
@@ -19,23 +16,11 @@ export async function createUser(user: any = {}) {
 		await newUser.save() // למה לא מצליח לשמור וקודם כן
 		return newUser;
 	}
-	catch(err) {
+	catch(err: any) {
 		console.log(err)
 		throw new Error(err)
 	}
 }
-
-// async function hash(password: string) {
-// 	try{
-// 		const salt = bcrypt.genSalt(10)
-// 		const hashedPassword = await bcrypt.hash(password, salt)
-// 		return hashedPassword
-// 	}
-// 	catch(e){
-// 		console.log(e)
-// 	}
-
-// }
 
 export async function getUserByUsername(username) {
 	const user = await UserModel.findOne({ username: username })
@@ -54,7 +39,7 @@ export async function updateTokenTimeOfUserDB(id, date) {
 	return user
 }
 
-export async function getTokenAndOptions(id, tokenDate) { // token return "createdAt" (date) and "signAt" (id)
+export async function getTokenAndOptions(id, tokenDate):Promise<{token: string, options: {}}> { // token return "createdAt" (date) and "signAt" (id)
 	const signUser = { id: id }
 	const token = sign({ createdAt: tokenDate, signAt: signUser  }, process.env.SECRET)
 	const options = {

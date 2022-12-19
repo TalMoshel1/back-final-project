@@ -9,7 +9,7 @@ import { validateBodyUser } from './users-controller'
 function validateBodyLogin(obj: Record<string, string>) {
     const { username, password } = obj
     if (!(username && password)) {
-        return Errors.FailedLoginError
+        return [Errors.provideValue]
     }
     const props = Object.entries(obj)
     const errors = props.reduce((errorsList: object[], pair: string[]) => {
@@ -22,9 +22,16 @@ function validateBodyLogin(obj: Record<string, string>) {
             if (value.length <= 4) {
                 errorsList.push(Errors.usernameLength)
             }
-        } else if (field === 'password') {
+            if (!value) {
+                errorsList.push(Errors.provideValue)
+            }
+        }
+        if (field === 'password') {
             if (value.length < 8) {
                 errorsList.push(Errors.password)
+            }
+            if (!value) {
+                errorsList.push(Errors.provideValue)
             }
         }
         return errorsList
@@ -34,15 +41,24 @@ function validateBodyLogin(obj: Record<string, string>) {
 
 export async function login(req, res) {
     const errors = validateBodyLogin(req.body)
-    if (errors.length) {
-        return res.status(403).send(errors)
+    if (errors.length === 1) {
+        res.status(403).send([errors])
+        return
+    } else if (errors.length) {
+        console.log('all errors : ',errors)
+        res.status(403).send([errors])
+        return
     }
     const { username, password } = req.body;
     const user = await getUserByUsername(username);
     if (!user) {
-        return res.status(404).send(Errors.FailedLoginError)
-    } else if (await !bcrypt.compare(password, user.password)) {
-        return res.status(401).send(Errors.FailedLoginError)
+        res.status(403).send([Errors.userNotExists])
+        return
+    }
+    const arePasswordsEquals = await bcrypt.compare(password, user.password)
+    if (!arePasswordsEquals) {
+        res.status(401).send([Errors.wrongPassword])
+        return
     }
     const tokenDate = new Date().getTime()
     await updateTokenTimeOfUserDB(user._id, tokenDate)
@@ -55,11 +71,13 @@ export async function login(req, res) {
 export async function register(req, res) {
     const { email, username, password, fullname } = req.body
     if (!(email && username && password && fullname)) {
-        return res.status(403).send(Errors.missedFields)
+        return res.status(403).send([Errors.missedFields])
 
     }
     const errors = validateBodyUser(req.body)
-    if (errors.length) {
+    if (errors.length === 1) {
+        return res.status(403).send(errors)
+    } else if (errors.length) {
         return res.status(403).send(errors)
     }
     const user = await getUserByUsername(username);
@@ -74,4 +92,9 @@ export async function register(req, res) {
     catch {
         res.status(400)
     }
+}
+
+
+export async function logout(req, res) {
+    return res.clearCookie
 }

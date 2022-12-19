@@ -14,21 +14,10 @@ function sendResponse(req, res) {
 
 router.use(verifyUser)
 
-
-// api/posts/1234534FGSDGZ3s#zs
 router.get('/api/posts/:username', getPostsByUsername)
 router.get('/api/post/:postId', getPostById)
-// router.get('/api/posts/:postId/comments', getPostById, getPostComments) // if postId dont shown as query how to pass the middleware an id?
-// router.get('/api/posts/:postId/likes', getPostById, getPostLikes)
 router.post('/api/post', upload.array('media', 3), createPost)
 router.put('/api/post/:postId', upload.array('media', 3), updatePost)
 router.delete('/api/post/:postId', deletePost)
-
-router.post('/api/post/singleMedia', upload.single('media'), (req, res) => {
-	console.log(`details: ${req.file}`)
-})
-// router.post('/api/posts/:postId/like', getPostById, likes)
-// router.post('/api/posts/:postId/unlike', getPostById, unlike)
-
 
 export default router
