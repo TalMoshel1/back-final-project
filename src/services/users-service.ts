@@ -1,5 +1,5 @@
 import { UserModel } from "../models/user";
-import { Errors } from '../util/UserErrors.ts'
+import { Errors } from '../util/UserErrors'
 
 export async function serviceGetUsers() {
 	const users = await UserModel.find()

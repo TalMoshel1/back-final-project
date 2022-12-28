@@ -41,7 +41,7 @@ export async function updateTokenTimeOfUserDB(id, date) {
 
 export async function getTokenAndOptions(id, tokenDate):Promise<{token: string, options: {}}> { // token return "createdAt" (date) and "signAt" (id)
 	const signUser = { id: id }
-	const token = sign({ createdAt: tokenDate, signAt: signUser  }, process.env.SECRET)
+	const token = sign({ createdAt: tokenDate, signAt: signUser  }, process.env.JWT_KEY)
 	const options = {
 		httpOnly: true
 	}

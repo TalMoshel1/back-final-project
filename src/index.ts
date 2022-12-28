@@ -10,7 +10,7 @@ import { Server } from 'socket.io'
 const app = express();
 
 
-app.use(cors({ origin: 'http://localhost:3001', credentials: true }))
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
 app.use(session({
   saveUninitialized: false,
   resave: false,
@@ -29,12 +29,12 @@ app.use(appRouter)
 
 connectTodb()
   .then(() => {
-    const server = app.listen(process.env.PORT || 3030, () => {
-      console.log(`listening on port ${process.env.PORT || 3030}`);
+    const server = app.listen(process.env.PORT||4000, () => {
+      console.log(`listening on port:  ${process.env.PORT}`);
     })
     const io = new Server(server, {
       cors: {
-        origin: 'http://localhost:3001',
+        origin: 'http://localhost:3000',
         methods: ['GET', 'POST']
       }
     })
@@ -47,5 +47,6 @@ connectTodb()
       }, 2000)
   })
 })
-
 dotenv.config()
+
+
