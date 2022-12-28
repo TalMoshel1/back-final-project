@@ -36,7 +36,7 @@ async function verifyUser(req: Request, res: Response, next: NextFunction) {
 		res.status(401).json(Errors.noToken)
 	} else {
 		try {
-			const tokenValue = await verify(token, process.env.SECRET) /* token return "createdAt" (date) and "signAt" (id) */
+			const tokenValue = await verify(token, process.env.JWT_KEY) /* token return "createdAt" (date) and "signAt" (id) */
 			const tokenDate = tokenValue.createdAt
 			const tokenId = tokenValue.signAt.id
 			const time = Date.now()
