@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AuthenticatedRequest } from '../types__interfaces';
 import { serviceGetFollowingsById } from '../services/feed-service';
 import { serviceGetPostsOfFollowings, serviceGetUsersSuggestions } from '../services/feed-service'

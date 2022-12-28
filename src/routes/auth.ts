@@ -1,3 +1,4 @@
+// @ts-nocheck
 import express from 'express'
 import verifyUser from '../middlewares/verify-user'
 import {register, login} from '../controllers/auth-controller'

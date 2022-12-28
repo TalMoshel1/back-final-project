@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PostModel } from '../models/post'
 import { serviceCreatePost, serviceGetFeed, serviceGetPost, serviceGetPostsByUsername, update, deletePost as deletePostService } from '../services/post-service'
 import { NextFunction, Request, Response } from 'express'

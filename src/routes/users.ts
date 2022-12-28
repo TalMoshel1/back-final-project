@@ -1,3 +1,4 @@
+// @ts-nocheck
 import express from 'express'
 import appRouter from '.'
 import verifyUser from '../middlewares/verify-user'
