@@ -64,12 +64,11 @@ export async function login(req, res) {
     await updateTokenTimeOfUserDB(user._id, tokenDate)
     const tokenAndOptions = await getTokenAndOptions(user._id, tokenDate)
     res.cookie('cookieInsta', tokenAndOptions.token, tokenAndOptions.options)
-    return res.send(user.username)
+    return res.send(tokenAndOptions)
 }
 
 
 export async function register(req, res) {
-    console.log('?')
     const { email, username, password, fullname } = req.body
     if (!(email && username && password && fullname)) {
         return res.status(403).send([Errors.missedFields])
