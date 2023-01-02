@@ -25,7 +25,6 @@ app.use(cookieParser())
 app.use(express.json())
 app.use('/uploads', express.static('./uploads'))
 app.use(appRouter)
-console.log(process.env.BE_URL)
 connectTodb()
   .then(() => {
     const port = process.env.PORT || 10000
@@ -34,7 +33,7 @@ connectTodb()
     })
     const io = new Server(server, {
       cors: {
-        origin: process.env.FE_URL || 'http://localhost:3000',
+        origin: process.env.FE_URL,
         methods: ['GET', 'POST']
       }
     })
