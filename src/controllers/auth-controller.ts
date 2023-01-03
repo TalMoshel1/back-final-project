@@ -39,6 +39,30 @@ function validateBodyLogin(obj: Record<string, string>) {
     return errors
 }
 
+export async function loginNoAuth(req, res) {
+    const errors = validateBodyLogin(req.body)
+    if (errors.length === 1) {
+        res.status(403).send([errors])
+        return
+    } else if (errors.length) {
+        console.log('all errors : ',errors)
+        res.status(403).send([errors])
+        return
+    }
+    const { username, password } = req.body;
+    const user = await getUserByUsername(username);
+    if (!user) {
+        res.status(403).send([Errors.userNotExists])
+        return
+    }
+    const arePasswordsEquals = await bcrypt.compare(password, user.password)
+    if (!arePasswordsEquals) {
+        res.status(401).send([Errors.wrongPassword])
+        return
+    }
+    return user
+}
+
 export async function login(req, res) {
     const errors = validateBodyLogin(req.body)
     if (errors.length === 1) {
@@ -64,7 +88,7 @@ export async function login(req, res) {
     await updateTokenTimeOfUserDB(user._id, tokenDate)
     const tokenAndOptions = await getTokenAndOptions(user._id, tokenDate)
     res.cookie('cookieInsta', tokenAndOptions.token, tokenAndOptions.options)
-    return res.send(tokenAndOptions)
+    return res.send(user.username)
 }
 
 
