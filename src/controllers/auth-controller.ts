@@ -63,7 +63,7 @@ export async function login(req, res) {
     const tokenDate = new Date().getTime()
     await updateTokenTimeOfUserDB(user._id, tokenDate)
     const tokenAndOptions = await getTokenAndOptions(user._id, tokenDate)
-    // res.cookie('cookieInsta', tokenAndOptions.token, tokenAndOptions.options)
+    res.cookie('cookieInsta', tokenAndOptions.token, tokenAndOptions.options)
     return res.send(tokenAndOptions)
 }
 
