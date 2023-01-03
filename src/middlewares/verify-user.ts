@@ -33,6 +33,7 @@ async function verifyUser(req: Request, res: Response, next: NextFunction) {
 		return next()
 	}
 	if (!token ) {
+        console.log('not finding the token')
 		res.status(401).json(Errors.noToken)
 	} else {
 		try {
