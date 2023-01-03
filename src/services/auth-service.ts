@@ -43,7 +43,7 @@ export async function getTokenAndOptions(id, tokenDate):Promise<{token: string, 
 	const signUser = { id: id }
 	const token = sign({ createdAt: tokenDate, signAt: signUser  }, process.env.JWT_KEY)
 	const options = {
-		// httpOnly: true
+		httpOnly: true
 	}
 	return {token, options}
 }
