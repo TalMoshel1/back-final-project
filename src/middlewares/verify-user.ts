@@ -26,7 +26,6 @@ export interface Request {
 	path: string;
 	cookies: string[];
 }
-
 async function verifyUser(req: Request, res: Response, next: NextFunction) {
 	const token = req.cookies['cookieInsta']  /* token return "createdAt" (date) and "signAt" (id) */
 	if (req.path === '/api/login' || req.path === '/api/register') {
@@ -42,7 +41,6 @@ async function verifyUser(req: Request, res: Response, next: NextFunction) {
 			const tokenId = tokenValue.signAt.id
 			const time = Date.now()
 			const tokenOptions = await getTokenAndOptions(tokenId, time)
-            console.log('gets here')
 			res.cookie('cookieInsta', tokenOptions.token, tokenOptions.options)
 			const user = await getUserById(tokenId)
 			req.id = user?._id
