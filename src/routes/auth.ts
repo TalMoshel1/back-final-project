@@ -11,7 +11,7 @@ router.post('/api/register', register)
 router.get('/api/user-info',verifyUser, (req: Request, res) => {
     res.json(req.user)
 } )
-router.post('api/loginNoAuth', loginNoAuth)
+router.post('/api/loginNoAuth', loginNoAuth)
 router.get('/api/logout', (req,res)=>{
     return res.clearCookie('cookieInsta')
     .status(200)
