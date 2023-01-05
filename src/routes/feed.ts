@@ -7,8 +7,9 @@ const router = express.Router()
 
 
 
-
 router.use(verifyUser)
+
+
 
 router.get('/api/post/feed', FollowingsById, getFeedPosts)
 router.get('/api/suggestions/feed',FollowingsById, getFeedSuggestions )

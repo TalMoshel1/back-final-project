@@ -17,7 +17,8 @@ const router = express.Router()
 // 	res.json({'avi': '1'})
 // }
 
-router.use(verifyUser)
+if (process.env.NODE_ENV === 'development') {router.use(verifyUser)}
+
 
 router.post('/api/user', createUser)
 router.put('/api/user/:userId', upload.single('media'), updateUser)

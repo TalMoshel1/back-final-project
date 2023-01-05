@@ -45,7 +45,6 @@ export async function loginNoAuth(req, res) {
         res.status(403).send([errors])
         return
     } else if (errors.length) {
-        console.log('all errors : ',errors)
         res.status(403).send([errors])
         return
     }

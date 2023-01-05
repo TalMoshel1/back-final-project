@@ -15,6 +15,7 @@ function sendResponse(req, res) {
 
 router.use(verifyUser)
 
+
 router.get('/api/posts/:username', getPostsByUsername)
 router.get('/api/post/:postId', getPostById)
 router.post('/api/post', upload.array('media', 3), createPost)
