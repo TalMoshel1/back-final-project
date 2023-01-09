@@ -105,7 +105,7 @@ export async function register(req, res) {
     }
     const user = await getUserByUsername(username);
     if (user) {
-        return res.status(403).send(Errors.usernameExists)
+        return res.status(403).send([Errors.usernameExists])
     }
     try {
         const newUser = await createUser(req.body);
