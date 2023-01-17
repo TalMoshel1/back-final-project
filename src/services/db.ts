@@ -9,7 +9,7 @@ import mongoose from 'mongoose'
 
 export async function connectTodb() {
   try {
-    await mongoose.connect('mongodb+srv://eilontal:eilontal@final-project-backend.trmjkco.mongodb.net/?retryWrites=true&w=majority');
+    await mongoose.connect(`mongodb+srv://eilontal:${process.env.MONGODB_PASSWORD}@final-project-backend.trmjkco.mongodb.net/?retryWrites=true&w=majority`);
     console.log('connected to db')
 
   } catch (error) {
